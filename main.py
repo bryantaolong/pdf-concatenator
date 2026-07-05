@@ -1,10 +1,10 @@
-import PyPDF2
+from pypdf import PdfWriter, PdfReader
 import re
 import os
 from pathlib import Path
 
 
-def get_pdf_files_from_directory() -> list:
+def get_pdfs_from_directory() -> list:
     """从根目录下的 pdfs/ 目录中读取所有 PDF 文件"""
     # 获取当前脚本所在的根目录（或当前工作目录）
     current_dir = Path.cwd()  # 或者用 Path(__file__).parent 获取脚本所在目录
@@ -33,25 +33,27 @@ def get_pdf_files_from_directory() -> list:
 
 def main() -> None:
     # 从 pdfs/ 目录读取所有 PDF 文件
-    pdf_files = get_pdf_files_from_directory()
+    pdf_files = get_pdfs_from_directory()
     
     if not pdf_files:
         print("没有找到任何 PDF 文件，程序退出。")
         return
     
-    # 合并PDF
-    pdf_merger = PyPDF2.PdfMerger()
+    # 合并PDF (pypdf 6.x 使用 PdfWriter + PdfReader)
+    writer = PdfWriter()
     
     for pdf in pdf_files:
         try:
-            pdf_merger.append(pdf)
+            reader = PdfReader(pdf)
+            for page in reader.pages:
+                writer.add_page(page)
             print(f"已添加：{os.path.basename(pdf)}")
         except Exception as e:
             print(f"添加文件 '{pdf}' 时出错：{e}")
     
     output_filename = "合并结果.pdf"
-    pdf_merger.write(output_filename)
-    pdf_merger.close()
+    with open(output_filename, "wb") as output_file:
+        writer.write(output_file)
     print(f"\nPDF合并完成！已保存为：{output_filename}")
 
 
