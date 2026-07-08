@@ -1,152 +1,155 @@
-# PDF Concatenator (PDF 合并器)
+# PDF Concatenator
 
 [![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-一个简单实用的 Python 工具，用于自动合并指定目录下的所有 PDF 文件，并提取其中的金额信息。
+A simple and practical Python tool that automatically merges all PDF files in a specified directory and extracts amount information from them.
 
-## 功能特点
+## Features
 
-- 📄 自动扫描 `pdfs/` 目录下的所有 PDF 文件
-- 🔗 按文件名排序后合并为一个 PDF 文件
-- 💰 自动提取合并后文档中的金额信息（¥ 符号开头的数字）
-- 🚀 基于 PyPDF2 库，轻量快速
+- 📄 Automatically scans all PDF files in the `pdfs/` directory
+- 🔗 Merges them into a single PDF file after sorting by filename
+- 💰 Automatically extracts amount information (numbers starting with ¥) from the merged document
+- 🚀 Lightweight and fast, based on the pypdf library
 
-## 环境要求
+## Requirements
 
-- Python 3.10 或更高版本
-- [uv](https://github.com/astral-sh/uv)（快速 Python 包管理器）
+- Python 3.13 or higher
+- [uv](https://github.com/astral-sh/uv) (fast Python package manager)
 
-## 安装与使用
+## Installation & Usage
 
-### 1. 克隆或下载项目
+### 1. Clone or download the project
 
 ```bash
 git clone "https://github.com/bryantaolong/pdf_concatenator.git"
 cd pdf_concatenator
 ```
 
-### 2. 目录结构
+### 2. Directory Structure
 
-目录结构示例：
+Example directory structure:
 ```
 pdf_concatenator/
 ├── main.py
 ├── README.md
 └── pdfs/
-    ├── 文档1.pdf
-    ├── 文档2.pdf
-    └── 文档3.pdf
+    ├── document1.pdf
+    ├── document2.pdf
+    └── document3.pdf
 ```
 
-### 3. 安装依赖
+### 3. Install Dependencies
 
-使用 `uv` 安装依赖（推荐）：
+Install dependencies using `uv` (recommended):
 
 ```bash
-uv add PyPDF2
+uv add pypdf
 ```
 
-或者使用传统的 `pip`：
+Or use traditional `pip`:
 
 ```bash
-pip install PyPDF2
+pip install pypdf
 ```
 
-### 4. 运行程序
+### 4. Run the program
 
 ```bash
 uv run main.py
 ```
 
-或者：
+Or:
 
 ```bash
 python main.py
 ```
 
-## 使用说明
+## Usage Instructions
 
-1. 将要合并的 PDF 文件放入 `pdfs/` 目录
-2. 运行程序
-3. 程序会自动：
-   - 扫描目录中的所有 PDF 文件
-   - 按文件名排序后合并
-   - 生成 `合并结果.pdf` 文件
-   - 提取并显示文档中的金额信息
+1. Put the PDF files you want to merge into the `pdfs/` directory
+2. Run the program
+3. The program will automatically:
+   - Scan all PDF files in the directory
+   - Merge them after sorting by filename
+   - Generate a `r.pdf` file
+   - Extract and display amount information from the documents
 
-## 输出示例
+## Output Example
 
 ```
-找到 2 个 PDF 文件：
-  - 539-龙涛.pdf
+Found 2 PDF files:
+  - 539.pdf
   - Git Cheat Sheet.pdf
-已添加：539-龙涛.pdf
-已添加：Git Cheat Sheet.pdf
+Added: 539.pdf
+Added: Git Cheat Sheet.pdf
 
-PDF合并完成！已保存为：合并结果.pdf
+PDF merge complete! Saved as: r.pdf
 
-提取到的金额信息：['¥1,000.00', '¥2,500.00']
+Extracted amount information: ['¥1,000.00', '¥2,500.00']
 ```
 
-## 自定义配置
+## Customization
 
-### 修改合并后的文件名
+### Change the output filename
 
-在 `main.py` 中找到以下代码行：
+Find the following line in `main.py`:
 
 ```python
-output_filename = "合并结果.pdf"
+output_filename = "r.pdf"
 ```
 
-修改为你想要的文件名即可。
+Change it to the filename you want.
 
-### 修改金额提取规则
+### Modify the amount extraction rules
 
-当前正则表达式为 `r'¥[\d,]+\.?\d*'`，匹配以 ¥ 开头、包含数字和逗号的金额。如需修改，调整第 52 行的正则表达式：
+The current regular expression is `r'¥[\d,]+\.?\d*'`, which matches amounts starting with ¥, containing digits and commas. To modify it, adjust the regular expression on line 52:
 
 ```python
 amounts = re.findall(r'¥[\d,]+\.?\d*', text)
 ```
 
-例如，匹配美元金额：
+For example, to match USD amounts:
 ```python
 amounts = re.findall(r'\$[\d,]+\.?\d*', text)
 ```
 
-## 常见问题
+## FAQ
 
-### Q: 为什么提示"没有找到任何 PDF 文件"？
-A: 请确保：
-- `pdfs/` 目录存在于项目根目录
-- 目录中包含 `.pdf` 后缀的文件
-- 文件名没有特殊字符导致读取失败
+### Q: Why does it say "No PDF files found"?
 
-### Q: 合并后的 PDF 顺序不对？
-A: 程序默认按文件名排序。如需自定义顺序，可以在文件名前添加数字前缀，如：
-- `01_文档1.pdf`
-- `02_文档2.pdf`
+A: Please ensure:
+- The `pdfs/` directory exists in the project root
+- The directory contains files with the `.pdf` extension
+- The filenames don't contain special characters that cause read failures
 
-### Q: 提取中文 PDF 文本时出现乱码？
-A: PyPDF2 对某些中文字体支持有限。如遇此问题，可考虑更换为 `pdfplumber` 或 `pypdf`：
+### Q: The order of the merged PDF is wrong?
+
+A: The program sorts by filename by default. To customize the order, you can add numeric prefixes to the filenames, such as:
+- `01_document1.pdf`
+- `02_document2.pdf`
+
+### Q: Garbled text when extracting Chinese PDF text?
+
+A: PyPDF2 has limited support for some Chinese fonts. If you encounter this issue, consider switching to `pdfplumber` or `pypdf`:
 
 ```bash
 uv add pdfplumber
 ```
 
-然后修改代码中的 PDF 读取部分。
+Then modify the PDF reading part in the code.
 
-## 技术栈
+## Tech Stack
 
 - Python 3.13+
-- PyPDF2 - PDF 处理库
-- pathlib - 文件路径处理
-- re - 正则表达式匹配
+- pypdf - PDF processing library
+- pathlib - File path handling
+- re - Regular expression matching
 
-## 许可证
+## License
 
 MIT License
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
